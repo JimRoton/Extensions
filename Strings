@@ -67,7 +67,7 @@ namespace Struct.Core.Extensions
         public static bool IsEqual(this string Target, string Item, bool LazyCompare = true)
         {
             return LazyCompare ?
-                Target.ToTrimAndLower() == Item.ToTrimAndLower() :
+                Target.TrimAndLower() == Item.TrimAndLower() :
                 Target == Item;
         }
 
@@ -218,7 +218,7 @@ namespace Struct.Core.Extensions
                 return Default;
 
             // convert and return
-            return bool.TryParse(Target.ToTrimAndLower(), out bool Return) ? Return : Default;
+            return bool.TryParse(Target.TrimAndLower(), out bool Return) ? Return : Default;
         }
 
         /// <summary>
