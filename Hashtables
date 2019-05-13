@@ -1,0 +1,64 @@
+using System.Collections;
+
+namespace Struct.Core.Extensions
+{
+    public static class Hashtables
+    {
+        /// <summary>
+        /// This extension attempts to pull a value
+        /// from a Hashtable using the KeyName provided
+        /// and convert it to the type of Generic T. If
+        /// the conversion is unsuccessful, the default
+        /// value is returned.
+        /// </summary>
+        /// <typeparam name="T">Type</typeparam>
+        /// <param name="Table">Hashtable</param>
+        /// <param name="KeyName">Key Name</param>
+        /// <param name="Default">Default Value</param>
+        /// <returns>Extracted Value or Default</returns>
+        public static T TryGet<T>(this Hashtable Table, string KeyName, T Default)
+        {
+            return Table.TryParse<T>(KeyName, out T Return) ? Return : Default;
+        }
+
+        /// <summary>
+        /// This extension attempts to convert a key value from
+        /// a System.Collections.Hashtable into a type provided
+        /// by generic T and place it into the Output parameter.
+        /// If the conversion is successful, true is returned. If
+        /// not, false is returned and the default of T is placed
+        /// in the Output.
+        /// </summary>
+        /// <typeparam name="T">Type</typeparam>
+        /// <param name="Table">Hashtable</param>
+        /// <param name="KeyName">Key Name</param>
+        /// <param name="Output">Output Value</param>
+        /// <returns>Success</returns>
+        public static bool TryParse<T>(this Hashtable Table, string KeyName, out T Output)
+        {
+            // set Output to default while we
+            // check for all the false values
+            Output = default(T);
+
+            // not table
+            if (Table == null)
+                return false;
+
+            // no key
+            else if (string.IsNullOrWhiteSpace(KeyName))
+                return false;
+
+            // table doesn't contain this key
+            else if (!Table.Contains(KeyName))
+                return false;
+
+            // value isn't the right type
+            else if (Table[KeyName].GetType() != typeof(T))
+                return false;
+
+            // convert
+            Output = (T)Table[KeyName];
+            return true;
+        }
+    }
+}
