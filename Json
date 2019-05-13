@@ -1,0 +1,102 @@
+using Newtonsoft.Json;
+
+namespace Struct.Core.Extension
+{
+    public static class Json
+    {
+        /// <summary>
+        /// Uses the NewtonSoft.Json class
+        /// to deserialize the Target into
+        /// the generic T object.
+        /// </summary>
+        /// <typeparam name="T">Generic T</typeparam>
+        /// <param name="Target">Target Object</param>
+        /// <returns>Deserialized Object</returns>
+        public static T FromJson<T>(this string Target)
+        {
+            return JsonConvert.DeserializeObject<T>(Target);
+        }
+
+        /// <summary>
+        /// Uses the NewtonSoft.Json class
+        /// to deserialize the Target into
+        /// the generic T object using the
+        /// Json settings provided.
+        /// </summary>
+        /// <typeparam name="T">Generic T</typeparam>
+        /// <param name="Target">Target Object</param>
+        /// <param name="Settings">Json Settings</param>
+        /// <returns>Deserialized Object</returns>
+        public static T FromJson<T>(this string Target, JsonSerializerSettings Settings)
+        {
+            return JsonConvert.DeserializeObject<T>(Target, Settings);
+        }
+
+        /// <summary>
+        /// Uses the NewtonSoft.Json class
+        /// to deserialize the Target into
+        /// the generic T object using the
+        /// Json converters provided.
+        /// </summary>
+        /// <typeparam name="T">Generic T</typeparam>
+        /// <param name="Target">Target Object</param>
+        /// <param name="Converters">Json Converters</param>
+        /// <returns>Deserialized Object</returns>
+        public static T FromJson<T>(this string Target, JsonConverter[] Converters)
+        {
+            return JsonConvert.DeserializeObject<T>(Target, Converters);
+        }
+
+        /// <summary>
+        /// This extenion converts an object into a
+        /// Json serialized string using the Newtonsoft.Json
+        /// library. It includes the optional Newtonsoft.Json
+        /// JsonConverter class for custom conversions.
+        /// </summary>
+        /// <param name="Target">Target Object</param>
+        /// <param name="Converters">Json Converters Array</param>
+        /// <param name="Formatting">Format Options</param>
+        /// <returns>Json String</returns>
+        public static string ToJson(this object Target, JsonConverter[] Converters = null, Formatting Formatting = Formatting.None)
+        {
+            if (Converters == null)
+                return JsonConvert.SerializeObject(Target, Formatting);
+            else
+                return JsonConvert.SerializeObject(Target, Formatting, Converters);
+        }
+
+        /// <summary>
+        /// This extenion converts an object into a
+        /// Json serialized string using the Newtonsoft.Json
+        /// library. It includes the optional Newtonsoft.Json
+        /// SerializerSettings class for custom settings.
+        /// </summary>
+        /// <param name="Target">Target Object</param>
+        /// <param name="Settings">Serializer Settings</param>
+        /// <param name="Formatting">Format Options</param>
+        /// <returns>Json String</returns>
+        public static string ToJson(this object Target, JsonSerializerSettings Settings = null, Formatting Formatting = Formatting.None)
+        {
+            if (Settings == null)
+                return JsonConvert.SerializeObject(Target, Formatting);
+            else
+                return JsonConvert.SerializeObject(Target, Formatting, Settings);
+        }
+
+        /// <summary>
+        /// This extenion converts an object into a
+        /// Json serialized string using the Newtonsoft.Json
+        /// library. It includes the Type and Newtonsoft.Json
+        /// SerializerSettings class for custom settings.
+        /// </summary>
+        /// <param name="Target">Target Object</param>
+        /// <param name="Type">Class Type</param>
+        /// <param name="Settings">Json Settings</param>
+        /// <param name="Formatting"></param>
+        /// <returns>Json String</returns>
+        public static string ToJson(this object Target, System.Type Type, JsonSerializerSettings Settings, Formatting Formatting = Formatting.None)
+        {
+            return JsonConvert.SerializeObject(Target, Type, Formatting, Settings);
+        }
+    }
+}
