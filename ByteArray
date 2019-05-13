@@ -1,0 +1,124 @@
+using System;
+using System.Collections.Generic;
+
+namespace Struct.Core.Extensions
+{
+    public static class Bytes
+    {
+        /// <summary>
+        /// This extension concats all byte arrays
+        /// in the Parameters array into the Target
+        /// array. It can be used to concat one or
+        /// many byte arrays into a single array.
+        /// </summary>
+        /// <param name="Target">Byte Array</param>
+        /// <param name="Parameters">Array of Byte Arrays to Concat</param>
+        /// <returns>Concated Byte Array</returns>
+        public static byte[] ConcatAll(this byte[] Target, params byte[][] Parameters)
+        {
+            // no bytes to concat
+            if (Parameters == null)
+                return Target;
+
+            // no bytes to concat
+            else if (Parameters.Length == 0)
+                return Target;
+
+            List<byte> Return = new List<byte>();
+
+            try
+            {
+                // add current bytest to return
+                if (Target != null)
+                    Return.AddRange(Target);
+
+                // add all parameter bytes
+                foreach (byte[] bytes in Parameters)
+                    if (bytes != null)
+                        Return.AddRange(bytes);
+
+                return Return.ToArray();
+            }
+            finally
+            {
+                Return = null;
+            }
+        }
+
+        /// <summary>
+        /// This extension compares the Target byte array
+        /// with the Value byte array and returns true
+        /// if the Target ends with the Value. This extension
+        /// can be used when you receive bytes and are
+        /// waiting for a given patter at the end such
+        /// when you're sending/receiving and have a
+        /// terminator or encrypting/decrypting and looking
+        /// for an eol pattern.
+        /// </summary>
+        /// <param name="Target">Target Byte Array</param>
+        /// <param name="Value">Value Byte Array to Compare</param>
+        /// <returns>Target Ends With Value</returns>
+        public static bool EndsWith(this byte[] Target, byte[] Value)
+        {
+            // there the same thing!
+            if (Target == null && Value == null)
+                return true;
+
+            // can't be true
+            else if (Target == null && Value != null)
+                return false;
+
+            // can't be true
+            else if (Target != null && Value == null)
+                return false;
+
+            // can't be true
+            else if (Target.Length < Value.Length)
+                return false;
+
+            // grab the bytes from the end of target
+            byte[] Comparer = Target.SubArray(Value.Length, Target.Length - Value.Length);
+
+            // loop and compare char by char
+            for (int i = 0; i < Value.Length; i++)
+                if (Comparer[i] != Value[i])
+                    return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// This extension extracts a subset of byte array
+        /// from the Target. The extension can be used
+        /// when you need to pull a subset to use separately
+        /// from the full array, for example when combining
+        /// or comparing.
+        /// </summary>
+        /// <param name="Target">Target Byte Array</param>
+        /// <param name="Length">Length to Extract</param>
+        /// <param name="StartingIndex">Starting Index of Target</param>
+        /// <returns>Extracted Byte Array</returns>
+        public static byte[] SubArray(this byte[] Target, int Length, int StartingIndex = 0)
+        {
+            // nothing to get the bytes from
+            if (Target == null)
+                throw new ArgumentNullException("Target");
+
+            // no bytes requested
+            else if (Length < 1)
+                throw new Exception("The Length parameter mush be greater than zero.");
+
+            // requesting too much
+            else if (StartingIndex + Length > Target.Length)
+                throw new Exception("The starting index and bytes requested combine to exceed the number of bytes available.");
+
+            // create return array
+            byte[] Return = new byte[Length];
+
+            // copy from Length bytes starting at StartingIndex
+            Array.Copy(Target, StartingIndex, Return, 0, Length);
+
+            return Return;
+        }
+    }
+}
