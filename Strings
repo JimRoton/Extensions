@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 
 namespace Struct.Core.Extensions
@@ -80,10 +81,7 @@ namespace Struct.Core.Extensions
         /// <returns>Is Null, Empty, or White Space</returns>
         public static bool IsNullEmptyOrWhiteSpace(this string Target)
         {
-            if (string.IsNullOrWhiteSpace(Target))
-                return true;
-            else
-                return false;
+            return string.IsNullOrWhiteSpace(Target);
         }
 
         /// <summary>
@@ -181,6 +179,29 @@ namespace Struct.Core.Extensions
         }
 
         /// <summary>
+        /// This extension strips out all non numeric characters
+        /// from a string and uses int.TryParse to convert what
+        /// is left into an integer. If the TryParse fails, zero
+        /// is returned. Use this extension when you have a string
+        /// that also contains an integern (ex. Customer1 or Account22)
+        /// and you need only the integer part.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <returns>Integer Part</returns>
+        public static int StripToIntOrZero(this string Target)
+        {
+            // check for null
+            if (Target == null)
+                return 0;
+
+            // strip out non numerics
+            string Value = new string(Target.Where(x => "0123456789".IndexOf(x) > -1).ToArray());
+
+            // convert and return
+            return int.TryParse(Value, out int Return) ? Return : 0;
+        }
+
+        /// <summary>
         /// This extension will trim and lower the Target string
         /// and then use bool.TryParse to convert it to a
         /// boolean value. If successful, the boolean value
@@ -192,12 +213,39 @@ namespace Struct.Core.Extensions
         /// <returns>Parsed Boolean</returns>
         public static bool ToBoolOrDefault(this string Target, bool Default = false)
         {
-            bool Return;
-
-            if (bool.TryParse(Target.ToTrimAndLower(), out Return))
-                return Return;
-            else
+            // check for null
+            if (Target == null)
                 return Default;
+
+            // convert and return
+            return bool.TryParse(Target.ToTrimAndLower(), out bool Return) ? Return : Default;
+        }
+
+        /// <summary>
+        /// This extension converts a string to an
+        /// integer by trimming it and then user
+        /// int.TryParse to convert it. If the string
+        /// cannot be converted, the Default int is returned.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <param name="Default">Default Int</param>
+        /// <returns>Integer</returns>
+        public static int ToIntOrDefault(this string Target, int Default = 0)
+        {
+            return int.TryParse(Target.ToTrimOrEmpty(), out int Return) ? Return : Default;
+        }
+
+        /// <summary>
+        /// This extension converts a string to an
+        /// integer by trimming it and then using
+        /// int.TryParse to conver it. If the string
+        /// cannot be converted, zero is returned.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <returns>Integer</returns>
+        public static int ToIntOrZero(this string Target)
+        {
+            return int.TryParse(Target.ToTrimOrEmpty(), out int Return) ? Return : 0;
         }
 
         /// <summary>
@@ -226,10 +274,7 @@ namespace Struct.Core.Extensions
         /// <returns>String or string.Empty</returns>
         public static string ToStringOrEmpty(this string Target)
         {
-            if (Target.IsNullEmptyOrWhiteSpace())
-                return string.Empty;
-            else
-                return Target;
+            return Target.IsNullEmptyOrWhiteSpace() ? string.Empty : Target;
         }
 
         /// <summary>
@@ -241,7 +286,7 @@ namespace Struct.Core.Extensions
         /// </summary>
         /// <param name="Target">Target String</param>
         /// <returns>String converted to lower case</returns>
-        public static string ToTrimAndLower(this string Target)
+        public static string TrimAndLower(this string Target)
         {
             return Target.ToStringOrEmpty().ToLower();
         }
@@ -255,7 +300,7 @@ namespace Struct.Core.Extensions
         /// </summary>
         /// <param name="Target">Target String</param>
         /// <returns>String converted to upper case</returns>
-        public static string ToTrimAndUpper(this string Target)
+        public static string TrimAndUpper(this string Target)
         {
             return Target.ToStringOrEmpty().ToUpper();
         }
