@@ -1,0 +1,277 @@
+using System;
+using System.Text;
+
+namespace Struct.Core.Extensions
+{
+    /// <summary>
+    /// This class contains all the string manipulating
+    /// extensions that can be used to format string values
+    /// before they're sent on to lower level methods. Most
+    /// of the extensions are for convenience purposes but
+    /// some can be used to keep code clean and condensed
+    /// with the main branch.
+    /// </summary>
+    public static class Strings
+    {
+        public enum MASK_DIRECTION
+        {
+            Left,
+            Right
+        }
+
+        /// <summary>
+        /// This extension uses the System.Format
+        /// command to replace all replacement variables
+        /// such as {0}...{n} with the passed in
+        /// parameters.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <param name="Parameters">String Parameters</param>
+        /// <returns>Formatted String</returns>
+        public static string AddParameters(this string Target, params string[] Parameters)
+        {
+            if (Target.IsNullEmptyOrWhiteSpace())
+                return Target;
+            else
+                return string.Format(Target, Parameters);
+        }
+
+        /// <summary>
+        /// This extension uses the ExpandEnvironmentVariables
+        /// function and applies it to the Target string to
+        /// return an expanded version of the string. Use it
+        /// to replace any system environment variables such as
+        /// %USERNAME% with their system values.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <returns>Expanded String</returns>
+        public static string Expand(this string Target)
+        {
+            return Environment.ExpandEnvironmentVariables(Target.ToStringOrEmpty());
+        }
+
+        /// <summary>
+        /// This extension compares the Target string
+        /// to the Item string and returns true if
+        /// they're the same character for character.
+        /// If LazyCompare is true, the strings are
+        /// first trimmed and lowered to remove any
+        /// capitalization differences and empty space
+        /// differences.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <param name="Item">Secondary String</param>
+        /// <param name="LazyCompare">Lazy Comparison</param>
+        /// <returns>Are Equal</returns>
+        public static bool IsEqual(this string Target, string Item, bool LazyCompare = true)
+        {
+            return LazyCompare ?
+                Target.ToTrimAndLower() == Item.ToTrimAndLower() :
+                Target == Item;
+        }
+
+        /// <summary>
+        /// This extension uses the System.IsNullOrWhiteSpace
+        /// to return true if the string is Null, string.Empty,
+        /// or contains only white space. Otherwise, this
+        /// extension returns false.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <returns>Is Null, Empty, or White Space</returns>
+        public static bool IsNullEmptyOrWhiteSpace(this string Target)
+        {
+            if (string.IsNullOrWhiteSpace(Target))
+                return true;
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// This extensions masks a given number of
+        /// characters within the Target string using
+        /// the mask character provided. It will also
+        /// leave a number of characters exposed on
+        /// the far left or right depending on the
+        /// direction. Use it to mask credit cards or
+        /// other important info.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <param name="ExposedCharacterCount">Character Count to Leave Exposed</param>
+        /// <param name="Direction">Direction to mask</param>
+        /// <param name="MaskCharacter">Replacement character</param>
+        /// <returns>Masked string</returns>
+        public static string Mask(this string Target, int ExposedCharacterCount = 0, MASK_DIRECTION Direction = MASK_DIRECTION.Right, char MaskCharacter = 'X')
+        {
+            // no target string
+            if (Target.IsNullEmptyOrWhiteSpace())
+                return Target;
+
+            // target is shorter than exposed count thus all
+            // characters would be exposed
+            else if (Target.Length < ExposedCharacterCount)
+                return Target;
+
+            // mask from left to right
+            if (Direction == MASK_DIRECTION.Right)
+                for (int i = 0; i < Target.Length - ExposedCharacterCount; i++)
+                    Target = Target.ReplaceAt(i, MaskCharacter);
+
+            // mask from right to left
+            else
+                for (int i = Target.Length + 1; i > ExposedCharacterCount; i--)
+                    Target = Target.ReplaceAt(i, MaskCharacter);
+
+            return Target;
+        }
+
+        /// <summary>
+        /// This extension continues to replace the
+        /// string Value1 with string Value2 in the
+        /// Target string until all instances of
+        /// the string Value1 string value.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <param name="Value1">String to Replace</param>
+        /// <param name="Value2">String to Replace With</param>
+        /// <returns>Target with Replacement</returns>
+        public static string ReplaceAll(this string Target, string Value1, string Value2)
+        {
+            if (Target.IsNullEmptyOrWhiteSpace())
+                return Target;
+
+            while (Target.Contains(Value1))
+                Target.Replace(Value1, Value2);
+
+            return Target;
+        }
+
+        /// <summary>
+        /// This extension replaces a character within
+        /// the Target string at a given index with
+        /// the replacement character.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <param name="Index">Target Index</param>
+        /// <param name="ReplacmentCharacter">Replacement Character</param>
+        /// <returns>Replaced String</returns>
+        public static string ReplaceAt(this string Target, int Index, char ReplacmentCharacter)
+        {
+            // no target string
+            if (Target.IsNullEmptyOrWhiteSpace())
+                return Target;
+
+            // target string too short
+            else if (Target.Length < Index + 1)
+                return Target;
+
+            StringBuilder SB = new StringBuilder();
+
+            try
+            {
+                // replace character
+                SB[Index] = ReplacmentCharacter;
+
+                // return replaced string
+                return SB.ToString();
+            }
+            finally
+            {
+                SB = null;
+            }
+        }
+
+        /// <summary>
+        /// This extension will trim and lower the Target string
+        /// and then use bool.TryParse to convert it to a
+        /// boolean value. If successful, the boolean value
+        /// is returned and if not, the default boolean value
+        /// is returned.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <param name="Default">Default Boolean</param>
+        /// <returns>Parsed Boolean</returns>
+        public static bool ToBoolOrDefault(this string Target, bool Default = false)
+        {
+            bool Return;
+
+            if (bool.TryParse(Target.ToTrimAndLower(), out Return))
+                return Return;
+            else
+                return Default;
+        }
+
+        /// <summary>
+        /// This extension can be used to return a default
+        /// value when the Target string is empty, null, or
+        /// white space, otherwise, the Target string is
+        /// returned.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <param name="Default">Default String</param>
+        /// <returns>Returned String</returns>
+        public static string ToStringOrDefault(this string Target, string Default)
+        {
+            return Target.IsNullEmptyOrWhiteSpace() ?
+                Target : Default;
+        }
+
+        /// <summary>
+        /// This extension checks the target to determine
+        /// if it has characters. If so, the string is
+        /// returned, and if not, string.Empty is returned.
+        /// This extension can be used to ensure that your
+        /// string is not null or white space.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <returns>String or string.Empty</returns>
+        public static string ToStringOrEmpty(this string Target)
+        {
+            if (Target.IsNullEmptyOrWhiteSpace())
+                return string.Empty;
+            else
+                return Target;
+        }
+
+        /// <summary>
+        /// This extension returns a trimmed version of
+        /// the Target converted to lower case. This
+        /// extension can be used to ensure that no null
+        /// string is returned, and the string is always
+        /// converted to lower case.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <returns>String converted to lower case</returns>
+        public static string ToTrimAndLower(this string Target)
+        {
+            return Target.ToStringOrEmpty().ToLower();
+        }
+
+        /// <summary>
+        /// This extension returns a trimmed version of
+        /// the Target converted to upper case. This
+        /// extension can be used to ensure that no null
+        /// string is returned and the string is always
+        /// converted to upper case.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <returns>String converted to upper case</returns>
+        public static string ToTrimAndUpper(this string Target)
+        {
+            return Target.ToStringOrEmpty().ToUpper();
+        }
+
+        /// <summary>
+        /// This extension returns a trimmed version of
+        /// the Target string. If the string has no characters
+        /// or is only white space, an empty string is returned.
+        /// This extension can be used to ensure that a null
+        /// value is not returned.
+        /// </summary>
+        /// <param name="Target">Target String</param>
+        /// <returns>Trimmed String or Empty String</returns>
+        public static string ToTrimOrEmpty(this string Target)
+        {
+            return Target.ToStringOrEmpty().Trim();
+        }
+    }
+}
