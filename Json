@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Struct.Core.Extension
+namespace Struct.Core.Extensions
 {
     public static class Json
     {
