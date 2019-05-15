@@ -50,6 +50,19 @@ namespace Struct.Core.Extensions
         /// <summary>
         /// This extenion converts an object into a
         /// Json serialized string using the Newtonsoft.Json
+        /// library.
+        /// </summary>
+        /// <param name="Target">Target Object</param>
+        /// <param name="Formatting">Format Options</param>
+        /// <returns>Json String</returns>
+        public static string ToJson(this object Target, Formatting Formatting = Formatting.None)
+        {
+            return JsonConvert.SerializeObject(Target, Formatting);
+        }
+
+        /// <summary>
+        /// This extenion converts an object into a
+        /// Json serialized string using the Newtonsoft.Json
         /// library. It includes the optional Newtonsoft.Json
         /// JsonConverter class for custom conversions.
         /// </summary>
@@ -57,12 +70,9 @@ namespace Struct.Core.Extensions
         /// <param name="Converters">Json Converters Array</param>
         /// <param name="Formatting">Format Options</param>
         /// <returns>Json String</returns>
-        public static string ToJson(this object Target, JsonConverter[] Converters = null, Formatting Formatting = Formatting.None)
+        public static string ToJson(this object Target, JsonConverter[] Converters, Formatting Formatting = Formatting.None)
         {
-            if (Converters == null)
-                return JsonConvert.SerializeObject(Target, Formatting);
-            else
-                return JsonConvert.SerializeObject(Target, Formatting, Converters);
+            return JsonConvert.SerializeObject(Target, Formatting, Converters);
         }
 
         /// <summary>
@@ -75,12 +85,9 @@ namespace Struct.Core.Extensions
         /// <param name="Settings">Serializer Settings</param>
         /// <param name="Formatting">Format Options</param>
         /// <returns>Json String</returns>
-        public static string ToJson(this object Target, JsonSerializerSettings Settings = null, Formatting Formatting = Formatting.None)
+        public static string ToJson(this object Target, JsonSerializerSettings Settings, Formatting Formatting = Formatting.None)
         {
-            if (Settings == null)
-                return JsonConvert.SerializeObject(Target, Formatting);
-            else
-                return JsonConvert.SerializeObject(Target, Formatting, Settings);
+            return JsonConvert.SerializeObject(Target, Formatting, Settings);
         }
 
         /// <summary>
