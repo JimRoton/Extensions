@@ -12,7 +12,7 @@ namespace Struct.Core.Extensions
     /// some can be used to keep code clean and condensed
     /// with the main branch.
     /// </summary>
-    public static class Strings
+    public static class String
     {
         public enum MASK_DIRECTION
         {
