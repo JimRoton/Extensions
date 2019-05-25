@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Struct.Core.Extensions
 {
-    public static class Bytes
+    public static class Byte
     {
         /// <summary>
         /// This extension concats all byte arrays
@@ -102,15 +102,15 @@ namespace Struct.Core.Extensions
         {
             // nothing to get the bytes from
             if (Target == null)
-                throw new ArgumentNullException("Target");
+                return Target;
 
             // no bytes requested
             else if (Length < 1)
-                throw new Exception("The Length parameter mush be greater than zero.");
+                return new byte[0];
 
             // requesting too much
             else if (StartingIndex + Length > Target.Length)
-                throw new Exception("The starting index and bytes requested combine to exceed the number of bytes available.");
+                throw new Exception("Invalid size requested.");
 
             // create return array
             byte[] Return = new byte[Length];
