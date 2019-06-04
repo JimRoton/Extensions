@@ -6,7 +6,7 @@
         /// This extension checks to make sure that the target
         /// being returned is always an array. If the target
         /// is null then a zero length array is returned. Use
-        /// this extension when you need to insure that you
+        /// this extension when you need to insure that your
         /// data type array has been initialized.
         /// </summary>
         /// <param name="Target">Target Array</param>
